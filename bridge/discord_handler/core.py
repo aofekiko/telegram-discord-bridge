@@ -96,7 +96,7 @@ async def forward_embed_to_discord(telegram_client: TelegramClient, discord_chan
             media_path = await telegram_client.download_media(event.message,file=str(uuid.uuid1()))
             discord_file = discord.File(str(media_path))
             files.append(discord_file)
-            if event.message.media.document.mime_type.split('/')[0] == 'image':
+            if event.message.media.photo:
                 embed.set_image(url="attachment://"+str(media_path))
 
         for message_part in message_parts:
