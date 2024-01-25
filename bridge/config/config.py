@@ -19,6 +19,7 @@ class AppConfig():  # pylint: disable=too-few-public-methods
         self.internet_connected: bool = False
         self.healthcheck_interval = config_data["healthcheck_interval"]
         self.recoverer_delay: float = config_data["recoverer_delay"]
+        self.history_size_limit: float = config_data["history_size_limit"]
 
 
 class APIConfig():  # pylint: disable=too-few-public-methods

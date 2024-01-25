@@ -1,5 +1,5 @@
 """Messages history handler"""
-
+import os
 import asyncio
 import json
 from typing import Any, List, Optional
@@ -133,3 +133,14 @@ class MessageHistoryHandler:
             logger.debug("Fetched message: %s", message.id)
             messages.append(message)
         return messages
+
+    async def clean_history_data(self) -> None:
+        async with self._lock:
+            logger.debug("Cleaning old history data")
+            try:
+                if os.stat(MESSAGES_HISTORY_FILE).st_size / (1024 * 1024) > config.app.history_size_limit or os.stat(MISSED_MESSAGES_HISTORY_FILE).st_size / (1024 * 1024) > config.app.history_size_limit:
+                    os.remove(MESSAGES_HISTORY_FILE)
+                    os.remove(MISSED_MESSAGES_HISTORY_FILE)
+            except Exception as ex: 
+                logger.error("Failed rotating the history file! Make sure that the storage growth does not get out of hand!")
+

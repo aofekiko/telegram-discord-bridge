@@ -215,6 +215,7 @@ async def handle_new_message(event, config: Config, telegram_client: TelegramCli
             logger.debug("Saving mapping data for forwarder %s",
                          forwarder_name)
             main_sent_discord_message = sent_discord_messages[0]
+            await history_manager.clean_history_data()
             await history_manager.save_mapping_data(forwarder_name, event.message.id,
                                                     main_sent_discord_message.id)
             logger.info("Forwarded TG message %s to Discord message %s",
