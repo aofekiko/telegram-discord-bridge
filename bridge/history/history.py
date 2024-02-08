@@ -2,6 +2,7 @@
 import os
 import asyncio
 import json
+import glob
 from typing import Any, List, Optional
 
 import aiofiles
@@ -139,8 +140,16 @@ class MessageHistoryHandler:
             logger.debug("Cleaning old history data")
             try:
                 if os.stat(MESSAGES_HISTORY_FILE).st_size / (1024 * 1024) > config.app.history_size_limit or os.stat(MISSED_MESSAGES_HISTORY_FILE).st_size / (1024 * 1024) > config.app.history_size_limit:
-                    os.remove(MESSAGES_HISTORY_FILE)
-                    os.remove(MISSED_MESSAGES_HISTORY_FILE)
+                    open(MESSAGES_HISTORY_FILE, "w").close()
+                    open(MISSED_MESSAGES_HISTORY_FILE, "w").close()
             except Exception as ex: 
                 logger.error("Failed rotating the history file! Make sure that the storage growth does not get out of hand!")
 
+    def clean_old_media(self) -> None:
+        logger.debug("Cleaning old files ")
+        try:
+            files = glob.glob('[0-9a-f]'*8+'-'+'[0-9a-f]'*4+'-'+'[0-9a-f]'*4+'-'+'[0-9a-f]'*4+'-'+'[0-9a-f]'*12+'.*')
+            for file in files:
+                os.remove(file)
+        except Exception as ex:
+            logger.error("Failed deleting old media file! Make sure that the storage growth does not get out of hand!")

@@ -96,7 +96,7 @@ async def forward_embed_to_discord(telegram_client: TelegramClient, discord_chan
             media_path = await telegram_client.download_media(event.message,file=str(uuid.uuid1()))
             discord_file = discord.File(str(media_path))
             files.append(discord_file)
-            if event.message.media.photo:
+            if hasattr(event.message.media, 'photo'):
                 embed.set_image(url="attachment://"+str(media_path))
 
         for message_part in message_parts:
@@ -105,6 +105,7 @@ async def forward_embed_to_discord(telegram_client: TelegramClient, discord_chan
                 sent_messages.append(sent_message)
     except Exception as ex:
         logger.error("An error occured while sending a message to discord.")
+        logger.error(str(ex))
         return sent_messages
     finally:
         for file in files:

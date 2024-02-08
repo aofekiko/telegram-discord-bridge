@@ -218,6 +218,7 @@ async def handle_new_message(event, config: Config, telegram_client: TelegramCli
             await history_manager.clean_history_data()
             await history_manager.save_mapping_data(forwarder_name, event.message.id,
                                                     main_sent_discord_message.id)
+            history_manager.clean_old_media()
             logger.info("Forwarded TG message %s to Discord message %s",
                         event.message.id, main_sent_discord_message.id)
         else:
