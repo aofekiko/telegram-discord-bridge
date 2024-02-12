@@ -1,6 +1,7 @@
 """This module handles the communication with the OpenAI API."""
 import asyncio
 import functools
+import copy
 
 import openai
 import openai.error
@@ -23,7 +24,7 @@ async def analyze_message_and_generate_suggestions(text: str) -> str:
     try:
         create_completion = functools.partial(
             openai.Completion.create,
-            model="text-davinci-003",
+            model="gpt-3.5-turbo-0125",
             prompt=(
                 f"Given the message: '{text}', suggest related actions and correlated articles with links:\n"
                 f"Related Actions:\n- ACTION1\n- ACTION2\n- ACTION3\n"
@@ -60,29 +61,23 @@ async def analyze_message_sentiment(text: str) -> str:
     """analyze the message text and seek for suggestions."""
     loop = asyncio.get_event_loop()
     try:
-        prompt = None
-        for prompt_line in config.openai.sentiment_analysis_prompt:
-            prompt = f"{prompt} {prompt_line}\n"
+        prompt = copy.deepcopy(config.openai.sentiment_analysis_prompt)
 
         if prompt is not None:
-            prompt = prompt.replace("#text_to_parse", text)
+            prompt.append({"role":"user","content":text})
 
         logger.debug("openai_sentiment_analysis_prompt %s", prompt)
 
         create_completion = functools.partial(
-            openai.Completion.create,
-            model="text-davinci-003",
-            prompt=(prompt),
-            temperature=0.7,
-            max_tokens=250,
-            top_p=1.0,
-            frequency_penalty=0.0,
-            presence_penalty=0.0
+            openai.ChatCompletion.create,
+            model="gpt-3.5-turbo-0125",
+            messages=(prompt)
         )
 
         response = await loop.run_in_executor(None, create_completion)
 
-        suggestion = response.choices[0].text.strip() # type: ignore # pylint: disable=no-member
+        suggestion = response.choices[0].message.content # type: ignore # pylint: disable=no-member
+        logger.debug("openai_sentiment_analysis_prompt result %s", suggestion)
         return suggestion
     except openai.error.InvalidRequestError as ex:
         logger.error("Invalid request error: %s", {ex})

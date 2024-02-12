@@ -75,6 +75,7 @@ class OpenAIConfig():  # pylint: disable=too-few-public-methods
 
     def __init__(self, config_data):
         self.is_healthy: bool = True
+        self.filter: bool = config_data["filter"]
         self.api_key: str = config_data["api_key"]
         self.organization: str = config_data["organization"]
         self.enabled: bool = config_data["enabled"]

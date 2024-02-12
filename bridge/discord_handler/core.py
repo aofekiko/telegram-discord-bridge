@@ -53,11 +53,11 @@ async def start_discord(config: Config) -> discord.Client:
 
 #  -> Optional[Union[GuildChannel, Thread, PrivateChannel]]:
 
-async def forward_embed_to_discord(telegram_client: TelegramClient, discord_channel: TextChannel, event) -> List[Message]:
+async def forward_embed_to_discord(telegram_client: TelegramClient, discord_channel: TextChannel, event, sidebarcolor: discord.Color) -> List[Message]:
     sent_messages = []
     files = []
     message_parts = split_message(event.message.message)
-    embed = discord.Embed(type="rich", colour=discord.Color.teal())
+    embed = discord.Embed(type="rich", colour=sidebarcolor)
     try:
         if event.message.forward:
             timestamp = event.message.forward.date

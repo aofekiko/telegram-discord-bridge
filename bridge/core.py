@@ -191,12 +191,19 @@ async def handle_new_message(event, config: Config, telegram_client: TelegramCli
         message_text = await process_message_text(
             event, forwarder_config, mention_everyone, mention_roles, config.openai.enabled)
 
+        sidebarcolor = discord.Color.teal()
+        if message_text == '':
+            if config.openai.filter:
+                return
+            else:
+                sidebarcolor = discord.Color.red()
+
         discord_reference = await fetch_discord_reference(event,
                                                           forwarder_name,
                                                           discord_channel) if event.message.reply_to_msg_id else None
 
         if forwarder_config["send_embed"]:
-            sent_discord_messages = await forward_embed_to_discord(telegram_client, discord_channel, event)
+            sent_discord_messages = await forward_embed_to_discord(telegram_client, discord_channel, event, sidebarcolor)
 
         elif event.message.media:
             sent_discord_messages = await handle_message_media(telegram_client, event,
