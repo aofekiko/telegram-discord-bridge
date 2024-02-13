@@ -197,7 +197,7 @@ async def process_message_text(event, forwarder_config: dict[str, Any],
         suggestions = await analyze_message_sentiment(message_text)
         if suggestions == "True":
             logger.debug("openai_sentiment_analysis_prompt filter triggered")
-            message_text = ''
+            return ''
 
     if mention_everyone:
         message_text += '\n' + '@everyone'

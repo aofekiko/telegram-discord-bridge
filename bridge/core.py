@@ -196,6 +196,7 @@ async def handle_new_message(event, config: Config, telegram_client: TelegramCli
             if config.openai.filter:
                 return
             else:
+                logger.debug("TEMP DEBUG embed colored red")
                 sidebarcolor = discord.Color.red()
 
         discord_reference = await fetch_discord_reference(event,

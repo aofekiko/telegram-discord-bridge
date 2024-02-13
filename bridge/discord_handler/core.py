@@ -57,6 +57,7 @@ async def forward_embed_to_discord(telegram_client: TelegramClient, discord_chan
     sent_messages = []
     files = []
     message_parts = split_message(event.message.message)
+    logger.debug("TEMP DEBUG embed colored" + sidebarcolor.to_rgb())
     embed = discord.Embed(type="rich", colour=sidebarcolor)
     try:
         if event.message.forward:
