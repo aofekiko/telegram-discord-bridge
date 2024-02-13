@@ -70,7 +70,12 @@ async def analyze_message_sentiment(text: str) -> str:
 
         create_completion = functools.partial(
             openai.ChatCompletion.create,
-            model="gpt-3.5-turbo-0125",
+            model=config.openai.model,
+            temperature=config.openai.temperature,
+            max_tokens=256,
+            top_p=1,
+            frequency_penalty=0,
+            presence_penalty=0,
             messages=(prompt)
         )
 
