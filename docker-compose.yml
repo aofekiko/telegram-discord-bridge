@@ -24,30 +24,9 @@ services:
       thebridge-net: null
     volumes:
       - type: bind
-        source: ./config.yml
-        target: /app/config.yml
-        bind:
-          create_host_path: true
-      - type: bind
-        source: ./hyp3rbridg3.log
-        target: /app/hyp3rbridg3.log
-        bind:
-          create_host_path: true
-      - type: bind
-        source: ./hyp3rbridg3_discord.log
-        target: /app/hyp3rbridg3_discord.log
-        bind:
-          create_host_path: true
-      - type: bind
-        source: ./hyp3rbridg3_telegram.log
-        target: /app/hyp3rbridg3_telegram.log
-        bind:
-          create_host_path: true
-      - type: bind
-        source: ./messages_history.json
-        target: /app/messages_history.json
-        bind:
-          create_host_path: true
+        source: ./shared
+        target: /app/shared
+        read_only: true
 # Networks section
 networks:
   thebridge-net:
