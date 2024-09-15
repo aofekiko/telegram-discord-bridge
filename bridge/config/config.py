@@ -20,6 +20,7 @@ class AppConfig():  # pylint: disable=too-few-public-methods
         self.healthcheck_interval = config_data["healthcheck_interval"]
         self.recoverer_delay: float = config_data["recoverer_delay"]
         self.history_size_limit: float = config_data["history_size_limit"]
+        self.messagesdb_filename: float = config_data["messagesdb_filename"]
 
 
 class APIConfig():  # pylint: disable=too-few-public-methods

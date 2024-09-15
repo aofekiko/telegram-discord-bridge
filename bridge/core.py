@@ -229,6 +229,8 @@ async def handle_new_message(event, config: Config, telegram_client: TelegramCli
             history_manager.clean_old_media()
             logger.info("Forwarded TG message %s to Discord message %s",
                         event.message.id, main_sent_discord_message.id)
+            logger.debug("Saving message data to append only file")
+            await history_manager.append_message_to_file(config.app.messagesdb_filename, sent_discord_messages)
         else:
             await history_manager.save_missed_message(forwarder_name,
                                                       event.message.id,
@@ -236,7 +238,6 @@ async def handle_new_message(event, config: Config, telegram_client: TelegramCli
                                                       None)
             logger.error("Failed to forward TG message %s to Discord",
                          event.message.id, exc_info=config.app.debug)
-
 
 def get_matching_forwarders(tg_channel_id, config: Config):
     """Get the forwarders that match the given Telegram channel ID."""

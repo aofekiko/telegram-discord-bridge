@@ -3,6 +3,8 @@ import os
 import asyncio
 import json
 import glob
+from datetime import date
+from datetime import datetime, timezone
 from typing import Any, List, Optional
 
 import aiofiles
@@ -153,3 +155,17 @@ class MessageHistoryHandler:
                 os.remove(file)
         except Exception as ex:
             logger.error("Failed deleting old media file! Make sure that the storage growth does not get out of hand!")
+
+    async def append_message_to_file(self, filename, sent_discord_messages) -> None:
+        dated_filename = filename + "-" + datetime.now().replace(tzinfo=timezone.utc).astimezone(tz=None).strftime('%Y-%m-%d')
+        try:
+            async with aiofiles.open(dated_filename, "a", encoding="utf-8") as file:
+                for message in sent_discord_messages:
+                    formatted_message = message.created_at.replace(tzinfo=timezone.utc).astimezone(tz=None).strftime("%Y/%m/%d, %H:%M:%S") + ": " + message.embeds[0].description + "\n"
+                    await file.write(formatted_message)
+
+            logger.debug("Message saved successfully.")
+
+        except Exception as ex:  # pylint: disable=broad-except
+            logger.error(
+                "An error occurred while saving message: %s", ex, exc_info=config.app.debug)
