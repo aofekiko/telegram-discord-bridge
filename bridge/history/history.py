@@ -157,7 +157,7 @@ class MessageHistoryHandler:
             logger.error("Failed deleting old media file! Make sure that the storage growth does not get out of hand!")
 
     async def append_message_to_file(self, filename, sent_discord_messages) -> None:
-        dated_filename = filename + "-" + datetime.now().replace(tzinfo=timezone.utc).astimezone(tz=None).strftime('%Y-%m-%d')
+        dated_filename = filename + "-" + datetime.now().replace(tzinfo=timezone.utc).astimezone(tz=None).strftime('%Y-%m-%d') + ".txt"
         try:
             async with aiofiles.open(dated_filename, "a", encoding="utf-8") as file:
                 for message in sent_discord_messages:
