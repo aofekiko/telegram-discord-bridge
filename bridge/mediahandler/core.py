@@ -16,6 +16,7 @@ logger = Logger.get_logger(config.application.name)
 class MediaHandler():
 
     async def download_media(telegram_client: TelegramClient, event ) -> str:
+        os.mkdir(config.application.media_store_location, exist_ok=True)
         media_path = await event.message.download_media(os.path.join(config.application.media_store_location, str(uuid.uuid1())))
         return media_path
 

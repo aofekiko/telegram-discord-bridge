@@ -71,9 +71,13 @@ class MessageHistoryHandler:
         mapping_data[forwarder_name][tg_message_id] = discord_message_id
 
         # Rotate oldest entries if file is too large
-        if os.stat(MESSAGES_HISTORY_FILE).st_size >= config.logger.file_max_bytes:
-            mapping_data[forwarder_name].pop(next(iter(mapping_data[forwarder_name])))
-            logger.debug("Reached max size on %s, starting to rotate entries", MESSAGES_HISTORY_FILE)
+        try:
+            if os.stat(MESSAGES_HISTORY_FILE).st_size >= config.logger.file_max_bytes:
+                mapping_data[forwarder_name].pop(next(iter(mapping_data[forwarder_name])))
+                logger.debug("Reached max size on %s, starting to rotate entries", MESSAGES_HISTORY_FILE)
+        except Exception as ex: 
+            logger.error("Could not read or rotate message history")
+            logger.error(ex)
         try:
             async with aiofiles.open(
                 MESSAGES_HISTORY_FILE, "w", encoding="utf-8"
