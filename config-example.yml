@@ -2,7 +2,7 @@
 # Basic application configuration
 application:
   name: "hyp3rbridg3"
-  version: "1.1.9"
+  version: "1.0.0"
   description: "A Python bridge to forward messages from those pesky Telegram channels to a shiny Discord channel, because why not?"
   # Whether to enable debug mode, it will increase the verbosity of the logs and the exceptions will be raised instead of being logged
   debug: True
@@ -10,6 +10,12 @@ application:
   healthcheck_interval: 10
   # The time in seconds to wait before forwarding each missed message
   recoverer_delay: 60
+  # Enable the anti-spam feature
+  anti_spam_enabled: True
+  # The time in seconds to wait before forwarding a message with the same content
+  anti_spam_similarity_timeframe: 60
+  # Anti spam similarity threshold (set 0 to 1, with 1 being identical)
+  anti_spam_similarity_threshold: 0.8
 
 # Management API configuration
 api:
@@ -31,7 +37,8 @@ logger:
   # format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
   format: "%(asctime)s %(levelprefix)s %(message)s"
   date_format: "%Y-%m-%d %H:%M:%S"
-  console: False # set to true to enable console logging and disable file based logging
+  # Whether to log to console or not
+  console: True # set to true to enable console logging and disable file based logging
 
 # Telegram configuration
 telegram:
@@ -44,7 +51,11 @@ telegram:
   # Long 32 characters hash identifier. Read more [here](https://core.telegram.org/api/obtaining_api_id) | With quotes
   api_hash: "<your api hash>"
   # Whether to log the conversations that aren't available for forwarding (private chats, etc.)
-  log_unhandled_conversations: False
+  log_unhandled_conversations: True
+  # Subscribe to EditMessage events to update the message on Discord
+  subscribe_to_edit_events: True
+  # Subscribe to DeleteMessage events to delete the message on Discord
+  subscribe_to_delete_events: True
 
 # Discord configuration
 discord:

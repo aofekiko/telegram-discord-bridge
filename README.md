@@ -1,10 +1,11 @@
 # Telegram - Discord Bridge
 
 [![Pylint](https://github.com/hyp3rd/telegram-discord-bridge/actions/workflows/pylint.yml/badge.svg)][pylint_badge]
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-A `Python` bridge to forward messages from those pesky Telegram channels to a shiny Discord channel, because why not? It is highly customizable and allows you to configure various settings, such as forwarding messages with specific hashtags, mentioning roles or users in Discord, and more.
+A `Python` bridge to forward messages from any Telegram **channel** to your **Discord** server, because why not? It is highly customizable and allows you to configure various settings, such as forwarding messages with specific hashtags, mentioning roles or users in Discord, and more.
 
-## Cunning Features
+## Features
 
 - Relocate messages from a multitude of Telegram channels
 - Shove forwarded messages into a designated Discord channel
@@ -16,6 +17,8 @@ A `Python` bridge to forward messages from those pesky Telegram channels to a sh
 - **It supports OpenAI's API to generate suggestions and sentiment analyses based on the text you're forwarding.**
 - It can run as a daemon and handle any shutdown gracefully, including `SIGTERM` and `SIGINT` signals. It will also save the state of the bridge, so you can resume from where you left off
 - You can enable logging to the file system, which will handle the rotation for you.
+- You can enable the management API to control the bridge remotely, including the ability to log in to Telegram via MFA.
+- You can enable the anti-spam feature to prevent the bridge from forwarding the same message multiple times.
 
 ## Installation
 
@@ -41,7 +44,7 @@ Now craft a new `config.yml` file in the root directory, starting from the `conf
 # Basic application configuration
 application:
   name: "hyp3rbridg3"
-  version: "1.1.9"
+  version: "1.0.0"
   description: "A Python bridge to forward messages from those pesky Telegram channels to a shiny Discord channel, because why not?"
   # Whether to enable debug mode, it will increase the verbosity of the logs and the exceptions will be raised instead of being logged
   debug: True
@@ -49,6 +52,12 @@ application:
   healthcheck_interval: 10
   # The time in seconds to wait before forwarding each missed message
   recoverer_delay: 60
+  # Enable the anti-spam feature
+  anti_spam_enabled: True
+  # The time in seconds to wait before forwarding a message with the same content
+  anti_spam_similarity_timeframe: 60
+  # Anti spam similarity threshold (set 0 to 1, with 1 being identical)
+  anti_spam_similarity_threshold: 0.8
 
 # Management API configuration
 api:
@@ -70,7 +79,8 @@ logger:
   # format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
   format: "%(asctime)s %(levelprefix)s %(message)s"
   date_format: "%Y-%m-%d %H:%M:%S"
-  console: False # set to true to enable console logging and disable file based logging
+  # Whether to log to console or not
+  console: True # set to true to enable console logging and disable file based logging
 
 # Telegram configuration
 telegram:
@@ -83,7 +93,11 @@ telegram:
   # Long 32 characters hash identifier. Read more [here](https://core.telegram.org/api/obtaining_api_id) | With quotes
   api_hash: "<your api hash>"
   # Whether to log the conversations that aren't available for forwarding (private chats, etc.)
-  log_unhandled_conversations: False
+  log_unhandled_dialogs: False
+  # Subscribe to EditMessage events to update the message on Discord
+  subscribe_to_edit_events: True
+  # Subscribe to DeleteMessage events to delete the message on Discord
+  subscribe_to_delete_events: True
 
 # Discord configuration
 discord:
@@ -166,7 +180,7 @@ In addition to text messages, the bridge can forward media files such as photos,
 You can run the bridge in a Docker container. The Docker image is available on [GitHub Packages](https://github.com/hyp3rd/telegram-discord-bridge/pkgs/container/bridge).
 
 ```bash
-docker run -p:8000:8000 -v $(pwd)/config.yml:/app/config.yml:ro -it ghcr.io/hyp3rd/bridge:v1.1.10
+docker run -p:8000:8000 -v $(pwd)/config.yml:/app/config.yml:ro -it ghcr.io/hyp3rd/bridge:v1.2.5
 ```
 
 ### Limitations
@@ -181,10 +195,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 This project is a masked vigilante inspired by the base idea of [Telegram-To-Discord-Forward-Bot](https://github.com/kkapuria3/Telegram-To-Discord-Forward-Bot) by [kkapuria3](https://github.com/kkapuria3/).
 
+## DISCLAIMER
+
+This project is not affiliated with Telegram or Discord. It is an open-source project developed by a single person in their spare time. It is provided as-is, with no warranty whatsoever.
+**Use it at your own risk.**
+
 ## Author
 
-I'm a surfer, a crypto trader, and a software architect with 15 years of experience designing highly available distributed production environments and developing cloud-native apps in public and private clouds. Just your average bloke. Feel free to connect with me on LinkedIn, but no funny business, alright?
-  
+I'm a surfer, a crypto trader, and a software architect with 15 years of experience designing highly available distributed production environments and developing cloud-native apps in public and private clouds. Just your average bloke. Feel free to connect with me on LinkedIn, but no funny business.
+
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/francesco-cosentino/)
 
 [pylint_badge]: https://github.com/hyp3rd/telegram-discord-bridge/actions/workflows/pylint.yml
