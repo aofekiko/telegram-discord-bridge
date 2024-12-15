@@ -68,6 +68,7 @@ class DiscordeEmbedHandler():
                         embed.set_image(url="attachment://"+str(os.path.basename(media_path)))
                 else:
                     embed.set_footer(text="MEDIA TOO BIG", icon_url=config.application.media_max_size_photo)
+                    os.remove(media_path)
 
             for message_part in message_parts:
                     embed.description=message_part
@@ -79,5 +80,6 @@ class DiscordeEmbedHandler():
             return sent_messages
         finally:
             os.remove(author_path)
+            os.remove(thumbnail_path)
         return sent_messages
     

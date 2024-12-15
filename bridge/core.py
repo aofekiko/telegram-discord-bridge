@@ -288,7 +288,7 @@ class Bridge:
                     message.id,
                     main_sent_discord_message.id,
                 )
-                MediaHandler.clean_old_media()
+                MediaHandler.clean_old_media(sent_discord_messages)
                 if forwarder.messagedb:
                     await MediaHandler.append_message_to_file(os.path.join(config.application.messagedb_dir,forwarder.forwarder_name), sent_discord_messages)
 

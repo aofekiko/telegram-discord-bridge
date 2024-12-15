@@ -26,8 +26,9 @@ class MediaHandler():
         try:
             async with aiofiles.open(dated_filename, "a", encoding="utf-8") as file:
                 for message in sent_discord_messages:
-                    formatted_message = message.created_at.replace(tzinfo=timezone.utc).astimezone(tz=None).strftime("%Y/%m/%d, %H:%M:%S") + ": " + message.embeds[0].description + "\n"
-                    await file.write(formatted_message)
+                    if message.embeds[0].description:
+                        formatted_message = message.created_at.replace(tzinfo=timezone.utc).astimezone(tz=None).strftime("%Y/%m/%d, %H:%M:%S") + ": " + message.embeds[0].description + "\n"
+                        await file.write(formatted_message)
 
             logger.debug("Message saved successfully.")
 
@@ -35,12 +36,13 @@ class MediaHandler():
             logger.error(
                 "An error occurred while saving message: %s", ex, exc_info=config.application.debug)
 
-    def clean_old_media() -> None:
-        logger.debug("Cleaning old media files")
+    def clean_old_media(sent_discord_messages) -> None:
         try:
-            files = glob.glob(config.application.media_store_location + "/" + '[0-9a-f]'*8+'-'+'[0-9a-f]'*4+'-'+'[0-9a-f]'*4+'-'+'[0-9a-f]'*4+'-'+'[0-9a-f]'*12+'.*')
-            for file in files:
-                os.remove(file)
+            for message in sent_discord_messages:
+                if message.embeds[0].image:
+                    filename = message.embeds[0].image.url.split("/")[-1].split("?")[0] 
+                    logger.debug("Removing file: %s", filename)
+                    os.remove(os.path.join(config.application.media_store_location ,filename))
         except Exception as ex:
             logger.error("Failed deleting old media file! Make sure that the storage growth does not get out of hand!")
 
