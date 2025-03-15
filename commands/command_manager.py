@@ -5,8 +5,13 @@ import discord.ext.commands
 from discord import app_commands as apc
 from core.singleton import SingletonMeta
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
 import numpy as np
+
+from bridge.config import Config
+from bridge.logger import Logger
+
+config = Config.get_instance()
+logger = Logger.get_logger(config.application.name)
 
 
 class CommandManager(metaclass=SingletonMeta):
@@ -31,8 +36,13 @@ async def stats(interaction: discord.Interaction, days: int):
         afterdate = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days)
         histogram = np.zeros(days)
         oldestmessagedate = datetime.datetime.now(datetime.timezone.utc)
+        latestupdate = 0
         while oldestmessagedate > afterdate:
-            print(f"Getting {LIMIT} messages for stats")
+            daydiff = (datetime.datetime.now(datetime.timezone.utc) - oldestmessagedate).days
+            if (latestupdate < daydiff - 5):
+                await msg.edit(content=f"Getting all old messages, this might take a while... Day: {(datetime.datetime.now(datetime.timezone.utc) - oldestmessagedate).days}")
+                latestupdate = daydiff
+            logger.debug(f"Getting {LIMIT} messages for stats")
             messages = [message async for message in interaction.channel.history(after=afterdate, before=oldestmessagedate, oldest_first=False, limit=LIMIT)]
             if (len(messages) == 0):
                 break
@@ -47,6 +57,8 @@ async def stats(interaction: discord.Interaction, days: int):
         plt.plot(x, histogram, linewidth=0.7)
         plt.gca().tick_params(axis='x', labelrotation=45)
         plt.gca().set_ylim(ymin=0)
+        plt.gca().set_xmargin(0)
+        plt.gca().set_ymargin(0.5)
         plt.tight_layout()
         plt.title(label=f"OSINT activity in the last {days} days")
         try:
