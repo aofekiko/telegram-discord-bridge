@@ -12,6 +12,7 @@ from bridge.history import MessageHistoryHandler
 from bridge.logger import Logger
 from bridge.utils import split_message
 from core import SingletonMeta
+from commands import command_manager
 
 config = Config.get_instance()
 logger = Logger.get_logger(config.application.name)
@@ -21,6 +22,7 @@ class DiscordHandler(metaclass=SingletonMeta):
     """Discord handler class."""
 
     history_manager: MessageHistoryHandler
+    CommandManager: command_manager.CommandManager
 
     def __init__(self):
         self.history_manager = MessageHistoryHandler()
@@ -37,6 +39,8 @@ class DiscordHandler(metaclass=SingletonMeta):
                     f"{config.application.name}_discord", config.logger
                 )
                 discord.utils.setup_logging(handler=discord_logging_handler)
+
+                self.CommandManager = command_manager.CommandManager(discord_client)
 
                 await discord_client.start(token)
                 logger.info(
@@ -56,6 +60,12 @@ class DiscordHandler(metaclass=SingletonMeta):
                 )
 
         discord_client = discord.Client(intents=discord.Intents.default())
+
+        @discord_client.event
+        async def on_ready():
+            await self.CommandManager.comamndTree.sync()
+            print("ready")
+
         _ = asyncio.ensure_future(
             start_discord_client(discord_client, config.discord.bot_token)
         )
