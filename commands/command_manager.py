@@ -1,6 +1,5 @@
 import datetime
 import os
-import dateparser.conf
 import dateutil.parser
 import discord
 import discord.ext.commands
@@ -9,7 +8,6 @@ from core.singleton import SingletonMeta
 import matplotlib.pyplot as plt
 import numpy as np
 import dateutil 
-from discord.ext import commands
 
 from bridge.config import Config
 from bridge.logger import Logger
