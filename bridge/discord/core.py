@@ -63,8 +63,8 @@ class DiscordHandler(metaclass=SingletonMeta):
 
         @discord_client.event
         async def on_ready():
-            await self.CommandManager.comamndTree.sync()
-            print("ready")
+            commands = await self.CommandManager.comamndTree.sync()
+            print(commands)
 
         _ = asyncio.ensure_future(
             start_discord_client(discord_client, config.discord.bot_token)
